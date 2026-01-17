@@ -21,25 +21,37 @@ jobs:
           - os-name: linux
             runner: ubuntu-22.04
             arch: x86_64
+            cc: gcc
+            cxx: g++
           - os-name: linux
             runner: ubuntu-22.04-arm
             arch: aarch64
+            cc: gcc
+            cxx: g++
 
           # --- macOS ---
           - os-name: macos
             runner: macos-15-intel
             arch: x86_64
+            cc: clang
+            cxx: clang++
           - os-name: macos
             runner: macos-14
             arch: aarch64
+            cc: clang
+            cxx: clang++
 
           # --- Windows ---
           - os-name: windows
             runner: windows-2022
             arch: x86_64
+            cc: clang-cl
+            cxx: clang-cl
           - os-name: windows
             runner: windows-11-arm
             arch: aarch64
+            cc: clang-cl
+            cxx: clang-cl
 
     steps:
       - uses: actions/checkout@0c366fd6a839edf440554fa01a7085ccba70ac98 # v6
@@ -62,9 +74,8 @@ jobs:
       - name: Build dav1d
         shell: bash
         env:
-          # for Windows aarch64
-          CC: clang-cl
-          CXX: clang-cl
+          CC: ${{ matrix.cc }}
+          CXX: ${{ matrix.cxx }}
         run: |
           # Keep sync the version
           # https://github.com/rust-av/dav1d-rs/blob/03477a36c3de4f2aacbab81a8951150ffdb9c4c3/dav1d-sys/build.rs#L10
@@ -80,8 +91,30 @@ jobs:
 
           ninja -C build
 
+      - name: Prepare Artifacts
+        shell: bash
+        run: |
+          mkdir -p dist/include/dav1d
+          mkdir -p dist/lib
+
+          ARTIFACT_NAME="${{ matrix.os-name }}-dav1d-${{ matrix.arch }}"
+          if [[ "${{ matrix.os-name }}" == "windows" ]]; then
+            cp dav1d/build/src/dav1d.lib "dist/lib/${ARTIFACT_NAME}.lib" 2>/dev/null || \
+            cp dav1d/build/src/libdav1d.a "dist/lib/${ARTIFACT_NAME}.a"
+          else
+            cp dav1d/build/src/libdav1d.a "dist/lib/${ARTIFACT_NAME}.a"
+          fi
+
+          cp dav1d/include/dav1d/*.h dist/include/dav1d/
+          cp dav1d/build/include/dav1d/*.h dist/include/dav1d/ 2>/dev/null || true
+
+      - name: Generate Attestations
+        uses: actions/attest-build-provenance@6865550d0380db508fc599a58cc87c50c0bba5c5 # v3
+        with:
+          subject-path: "dist/lib/*"
+
       - name: Upload Artifact
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
         with:
           name: ${{ matrix.os-name }}-dav1d-${{ matrix.arch }}
-          path: dav1d/build/
+          path: dist/
