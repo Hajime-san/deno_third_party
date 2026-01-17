@@ -103,8 +103,7 @@ jobs:
           # Unix-like (macOS/Linux): Expects "libdav1d.a"
           # https://github.com/gdesmott/system-deps/blob/f5592dd43672bcf0197f52f79f77b1144493e872/src/lib.rs#L1049-L1064
           if [[ "${{ matrix.os-name }}" == "windows" ]]; then
-            ls -A dav1d/build/src
-            cp dav1d/build/src/dav1d.a dist/lib/dav1d.lib
+            cp dav1d/build/src/libdav1d.a dist/lib/dav1d.lib
           else
             cp dav1d/build/src/libdav1d.a dist/lib/libdav1d.a
           fi
