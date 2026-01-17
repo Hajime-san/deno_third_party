@@ -98,14 +98,17 @@ jobs:
           mkdir -p dist/include/dav1d
           mkdir -p dist/lib
 
-          ARTIFACT_NAME="${{ matrix.os-name }}-dav1d-${{ matrix.arch }}"
+          # Standardize filenames to match system-deps expectations:
+          # Windows (MSVC): Expects "dav1d.lib"
+          # Unix-like (macOS/Linux): Expects "libdav1d.a"
+          # https://github.com/gdesmott/system-deps/blob/f5592dd43672bcf0197f52f79f77b1144493e872/src/lib.rs#L1049-L1064
           if [[ "${{ matrix.os-name }}" == "windows" ]]; then
-            cp dav1d/build/src/dav1d.lib "dist/lib/${ARTIFACT_NAME}.lib" 2>/dev/null || \
-            cp dav1d/build/src/libdav1d.a "dist/lib/${ARTIFACT_NAME}.a"
+            cp dav1d/build/src/dav1d.lib dist/lib/dav1d.lib
           else
-            cp dav1d/build/src/libdav1d.a "dist/lib/${ARTIFACT_NAME}.a"
+            cp dav1d/build/src/libdav1d.a dist/lib/libdav1d.a
           fi
 
+          # Copy headers
           cp dav1d/include/dav1d/*.h dist/include/dav1d/
           cp dav1d/build/include/dav1d/*.h dist/include/dav1d/ 2>/dev/null || true
 
