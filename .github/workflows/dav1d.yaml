@@ -54,9 +54,6 @@ jobs:
             cc: clang-cl
             cxx: clang-cl
 
-    env:
-      FILE_PATH_PREFIX: dav1d-${{ matrix.os-name }}-${{ matrix.arch }}
-
     steps:
       - uses: actions/checkout@0c366fd6a839edf440554fa01a7085ccba70ac98 # v6
 
@@ -98,25 +95,25 @@ jobs:
       - name: Prepare Artifacts
         shell: bash
         run: |
-          mkdir -p $FILE_PATH_PREFIX/$FILE_PATH_PREFIX
+          mkdir -p dist/lib
 
           # Standardize filenames to match system-deps expectations:
           # Windows (MSVC): Expects "dav1d.lib"
           # Unix-like (macOS/Linux): Expects "libdav1d.a"
           # https://github.com/gdesmott/system-deps/blob/f5592dd43672bcf0197f52f79f77b1144493e872/src/lib.rs#L1049-L1064
           if [[ "${{ matrix.os-name }}" == "windows" ]]; then
-            cp dav1d/build/src/libdav1d.a $FILE_PATH_PREFIX/$FILE_PATH_PREFIX/dav1d.lib
+            cp dav1d/build/src/libdav1d.a dist/lib/dav1d.lib
           else
-            cp dav1d/build/src/libdav1d.a $FILE_PATH_PREFIX/$FILE_PATH_PREFIX/libdav1d.a
+            cp dav1d/build/src/libdav1d.a dist/lib/libdav1d.a
           fi
 
       - name: Generate Attestations
         uses: actions/attest-build-provenance@6865550d0380db508fc599a58cc87c50c0bba5c5 # v3
         with:
-          subject-path: $FILE_PATH_PREFIX/$FILE_PATH_PREFIX/*
+          subject-path: dist/lib/*
 
       - name: Upload Artifact
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
         with:
-          name: $FILE_PATH_PREFIX
-          path: $FILE_PATH_PREFIX/
+          name: dav1d-${{ matrix.os-name }}-${{ matrix.arch }}
+          path: dist/
