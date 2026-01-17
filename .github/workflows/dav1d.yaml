@@ -1,0 +1,92 @@
+name: Build dav1d
+
+on:
+  push:
+    branches:
+      - add-dav1d
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: ${{ matrix.os-name }}-${{ matrix.arch }}
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # --- Linux ---
+          - os-name: linux
+            runner: ubuntu-22.04
+            arch: x86_64
+          - os-name: linux
+            runner: ubuntu-22.04-arm
+            arch: aarch64
+
+          # --- macOS ---
+          - os-name: macos
+            runner: macos-15-intel
+            arch: x86_64
+          - os-name: macos
+            runner: macos-14
+            arch: aarch64
+
+          # --- Windows ---
+          - os-name: windows
+            runner: windows-2022
+            arch: x86_64
+          - os-name: windows
+            runner: windows-11-arm
+            arch: aarch64
+
+    steps:
+      - uses: actions/checkout@0c366fd6a839edf440554fa01a7085ccba70ac98 # v6
+
+      - name: Install NASM (x86_64 only)
+        if: matrix.arch == 'x86_64'
+        uses: ilammy/setup-nasm@3a5c2907aab40613bec4a2c63f5d0ef0b11fbd9f # v1
+
+      - name: Install Python 3.9
+        uses: actions/setup-python@4f41a90a1f38628c7ccc608d05fbafe701bc20ae # v6
+        with:
+          python-version: "3.9"
+
+      - name: Install pip packages
+        run: |
+          pip install -U pip
+          pip install -U wheel setuptools
+          pip install -U meson ninja
+
+      - name: Setting up environment (Windows)
+        if: matrix.os-name == 'windows'
+        shell: bash
+        run: |
+          echo "PKG_CONFIG=c:\build\bin\pkg-config.exe" >> $GITHUB_ENV
+          echo "PKG_CONFIG_PATH=C:\build\lib\pkgconfig" >> $GITHUB_ENV
+
+      - name: Build pkg-config (Windows)
+        if: matrix.os-name == 'windows'
+        run: |
+          git clone --branch meson-glib-subproject --depth 1 https://gitlab.freedesktop.org/tpm/pkg-config.git
+          cd pkg-config
+          meson build -Dprefix=C:\build --buildtype release
+          ninja -C build
+          ninja -C build install
+
+      - name: Build dav1d
+        run: |
+          # Keep sync the version
+          # https://github.com/rust-av/dav1d-rs/blob/03477a36c3de4f2aacbab81a8951150ffdb9c4c3/dav1d-sys/build.rs#L10
+          git clone --depth 1 -b 1.5.0 https://code.videolan.org/videolan/dav1d.git
+          cd dav1d
+          meson build -Denable_tools=false -Denable_examples=false --default-library static --buildtype release
+          ninja -C build
+          ninja -C build install
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+        with:
+          name: ${{ matrix.os-name }}-dav1d-${{ matrix.arch }}
+          path: dav1d/build/
