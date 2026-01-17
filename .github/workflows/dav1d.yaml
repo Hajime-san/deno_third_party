@@ -46,7 +46,7 @@ jobs:
 
       - name: Install NASM (x86_64 only)
         if: matrix.arch == 'x86_64'
-        uses: ilammy/setup-nasm@3a5c2907aab40613bec4a2c63f5d0ef0b11fbd9f # v1
+        uses: ilammy/setup-nasm@v1
 
       - name: Install Python
         uses: actions/setup-python@4f41a90a1f38628c7ccc608d05fbafe701bc20ae # v6
@@ -83,7 +83,7 @@ jobs:
           cd dav1d
           meson build -Denable_tools=false -Denable_examples=false --default-library static --buildtype release
           ninja -C build
-          ninja -C build install
+          ninja -C build
 
       - name: Upload Artifact
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
