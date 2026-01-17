@@ -61,6 +61,10 @@ jobs:
 
       - name: Build dav1d
         shell: bash
+        env:
+          # for Windows aarch64
+          CC: clang-cl
+          CXX: clang-cl
         run: |
           # Keep sync the version
           # https://github.com/rust-av/dav1d-rs/blob/03477a36c3de4f2aacbab81a8951150ffdb9c4c3/dav1d-sys/build.rs#L10
