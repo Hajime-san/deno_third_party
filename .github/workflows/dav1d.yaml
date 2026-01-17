@@ -63,10 +63,16 @@ jobs:
         run: |
           # Keep sync the version
           # https://github.com/rust-av/dav1d-rs/blob/03477a36c3de4f2aacbab81a8951150ffdb9c4c3/dav1d-sys/build.rs#L10
-          git clone --depth 1 -b 1.5.0 https://code.videolan.org/videolan/dav1d.git
+          git clone https://code.videolan.org/videolan/dav1d.git -b 1.5.0 --depth 1
           cd dav1d
-          meson build -Denable_tools=false -Denable_examples=false --default-library static --buildtype release
-          ninja -C build
+
+          meson setup build \
+            --buildtype release \
+            --default-library static \
+            -Denable_tools=false \
+            -Denable_tests=false \
+            --werror
+
           ninja -C build
 
       - name: Upload Artifact
