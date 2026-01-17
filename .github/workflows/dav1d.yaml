@@ -55,7 +55,7 @@ jobs:
             cxx: clang-cl
 
     env:
-      FILE_PATH_PREFIX: dav1d-${{ matrix.os-name }}-${{ matrix.arch }}
+      FILE_PATH_PREFIX: ${{ matrix.os-name }}-${{ matrix.arch }}
 
     steps:
       - uses: actions/checkout@0c366fd6a839edf440554fa01a7085ccba70ac98 # v6
