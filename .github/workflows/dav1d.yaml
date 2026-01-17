@@ -103,19 +103,15 @@ jobs:
           # Unix-like (macOS/Linux): Expects "libdav1d.a"
           # https://github.com/gdesmott/system-deps/blob/f5592dd43672bcf0197f52f79f77b1144493e872/src/lib.rs#L1049-L1064
           if [[ "${{ matrix.os-name }}" == "windows" ]]; then
-            cp dav1d/build/src/libdav1d.a dist/lib/dav1d.lib
+            cp dav1d/build/src/libdav1d.a dist/dav1d.lib
           else
-            cp dav1d/build/src/libdav1d.a dist/lib/libdav1d.a
+            cp dav1d/build/src/libdav1d.a dist/libdav1d.a
           fi
-
-          # Copy headers
-          cp dav1d/include/dav1d/*.h dist/include/dav1d/
-          cp dav1d/build/include/dav1d/*.h dist/include/dav1d/ 2>/dev/null || true
 
       - name: Generate Attestations
         uses: actions/attest-build-provenance@6865550d0380db508fc599a58cc87c50c0bba5c5 # v3
         with:
-          subject-path: "dist/lib/*"
+          subject-path: "dist/*"
 
       - name: Upload Artifact
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
