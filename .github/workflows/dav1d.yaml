@@ -59,22 +59,6 @@ jobs:
           pip install -U wheel setuptools
           pip install -U meson ninja
 
-      - name: Setting up environment (Windows)
-        if: matrix.os-name == 'windows'
-        shell: bash
-        run: |
-          echo "PKG_CONFIG=c:\build\bin\pkg-config.exe" >> $GITHUB_ENV
-          echo "PKG_CONFIG_PATH=C:\build\lib\pkgconfig" >> $GITHUB_ENV
-
-      - name: Build pkg-config (Windows)
-        if: matrix.os-name == 'windows'
-        run: |
-          git clone --branch meson-glib-subproject --depth 1 https://gitlab.freedesktop.org/tpm/pkg-config.git
-          cd pkg-config
-          meson build -Dprefix=C:\build --buildtype release
-          ninja -C build
-          ninja -C build install
-
       - name: Build dav1d
         run: |
           # Keep sync the version
