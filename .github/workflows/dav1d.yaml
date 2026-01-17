@@ -6,13 +6,14 @@ on:
       - add-dav1d
   workflow_dispatch:
 
-permissions:
-  contents: read
-
 jobs:
   build:
     name: ${{ matrix.os-name }}-${{ matrix.arch }}
     runs-on: ${{ matrix.runner }}
+    permissions:
+      contents: read
+      id-token: write
+      attestations: write
     strategy:
       fail-fast: false
       matrix:
