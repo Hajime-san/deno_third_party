@@ -95,13 +95,10 @@ jobs:
           meson setup build \
             --buildtype release \
             --default-library static \
-            -Doptimization=s \
             -Ddebug=false \
-            -Db_lto=true \
             -Db_ndebug=true \
             -Denable_tools=false \
             -Denable_tests=false \
-            -Denable_asm=true \
             --werror
 
           ninja -C build
@@ -119,6 +116,7 @@ jobs:
             cp dav1d/build/src/libdav1d.a dist/${{ env.FILE_PATH_PREFIX }}/dav1d.lib
 
             # NOTE: it tends to be bigger when to strip symbols on Windows
+            ls -lh dist/${{ env.FILE_PATH_PREFIX }}/dav1d.lib
           else
             cp dav1d/build/src/libdav1d.a dist/${{ env.FILE_PATH_PREFIX }}/libdav1d.a
             # strip symbols
