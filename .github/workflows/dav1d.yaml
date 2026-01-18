@@ -99,6 +99,7 @@ jobs:
             -Db_ndebug=true \
             -Denable_tools=false \
             -Denable_tests=false \
+            -Dc_link_args='["-Wl,-dead_strip", "-Wl,-x"]' \
             --werror
 
           ninja -C build
