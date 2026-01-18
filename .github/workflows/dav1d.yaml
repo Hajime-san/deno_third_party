@@ -126,7 +126,7 @@ jobs:
 
             # show size after stripping
             ls -lh dav1d/build/src/libdav1d.a
-            ls -lh dist/${{ env.FILE_PATH_PREFIX }}/dav1d.lib
+            ls -lh dist/${{ env.FILE_PATH_PREFIX }}/libdav1d.a
           fi
 
       - name: Generate Attestations
