@@ -92,14 +92,11 @@ jobs:
           git clone https://code.videolan.org/videolan/dav1d.git -b 1.5.0 --depth 1
           cd dav1d
 
-          # Define optimized compiler flags based on latest x86_64 best practices.
-          # We set AVX2 as the baseline for speed and explicitly disable AVX-512 to save size.
+          # Define optimized compiler flags based on x86_64.
+          # We set SSE4.1 as the baseline for speed and explicitly disable AVX-512 to save size.
           EXTRA_C_ARGS=""
           if [[ "${{ matrix.arch }}" == "x86_64" ]]; then
-            # -mavx2: Set baseline to AVX2 for Deno compatibility and speed.
-            # -mno-avx512f: Disable AVX-512 to trigger 'trim_dsp' dead code elimination.
-            # -Wno-overriding-option: Prevent warnings when overriding default runner flags.
-            EXTRA_C_ARGS="-mavx2 -mno-avx512f -Wno-overriding-option"
+            EXTRA_C_ARGS="-msse4.1 -mno-avx512f -Wno-overriding-option"
           fi
 
           # options for meson
