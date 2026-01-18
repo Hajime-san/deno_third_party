@@ -130,12 +130,13 @@ jobs:
             cp dav1d/build/src/libdav1d.a dist/${{ env.FILE_PATH_PREFIX }}/libdav1d.a
           fi
 
+          ls -lh dav1d/build/src/libdav1d.a
+
           # strip symbols for Linux (ELF)
           if [[ "${{ matrix.os-name }}" == "linux" ]]; then
             strip dist/${{ env.FILE_PATH_PREFIX }}/libdav1d.a
 
             # show size after stripping
-            ls -lh dav1d/build/src/libdav1d.a
             ls -lh dist/${{ env.FILE_PATH_PREFIX }}/libdav1d.a
           fi
 
