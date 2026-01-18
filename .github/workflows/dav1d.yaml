@@ -95,10 +95,13 @@ jobs:
           meson setup build \
             --buildtype release \
             --default-library static \
+            -Doptimization=s \
+            -Ddebug=false \
             -Db_lto=true \
             -Db_ndebug=true \
             -Denable_tools=false \
             -Denable_tests=false \
+            -Denable_asm=true \
             --werror
 
           ninja -C build
@@ -114,11 +117,8 @@ jobs:
           # https://github.com/gdesmott/system-deps/blob/f5592dd43672bcf0197f52f79f77b1144493e872/src/lib.rs#L1049-L1064
           if [[ "${{ matrix.os-name }}" == "windows" ]]; then
             cp dav1d/build/src/libdav1d.a dist/${{ env.FILE_PATH_PREFIX }}/dav1d.lib
-            # strip symbols
-            llvm-strip --strip-debug dist/${{ env.FILE_PATH_PREFIX }}/dav1d.lib
 
-            ls -lh dav1d/build/src/libdav1d.a
-            ls -lh dist/${{ env.FILE_PATH_PREFIX }}/dav1d.lib
+            # NOTE: it tends to be bigger when to strip symbols on Windows
           else
             cp dav1d/build/src/libdav1d.a dist/${{ env.FILE_PATH_PREFIX }}/libdav1d.a
             # strip symbols
