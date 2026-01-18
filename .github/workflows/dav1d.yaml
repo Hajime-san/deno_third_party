@@ -93,10 +93,10 @@ jobs:
           cd dav1d
 
           # Define optimized compiler flags based on x86_64.
-          # We set SSE4.1 as the baseline for speed and explicitly disable AVX-512 to save size.
+          # We set SSE4.1 as the baseline.
           EXTRA_C_ARGS=""
           if [[ "${{ matrix.arch }}" == "x86_64" ]]; then
-            EXTRA_C_ARGS="-msse4.1 -mno-avx512f -Wno-overriding-option"
+            EXTRA_C_ARGS="-msse4.1 -Wno-overriding-option"
           fi
 
           # options for meson
