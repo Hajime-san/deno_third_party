@@ -92,13 +92,6 @@ jobs:
           git clone https://code.videolan.org/videolan/dav1d.git -b 1.5.0 --depth 1
           cd dav1d
 
-          # Define optimized compiler flags based on x86_64.
-          # We set SSE4.1 as the baseline.
-          EXTRA_C_ARGS=""
-          if [[ "${{ matrix.arch }}" == "x86_64" ]]; then
-            EXTRA_C_ARGS="-msse4.1 -Wno-overriding-option"
-          fi
-
           # options for meson
           # https://code.videolan.org/videolan/dav1d/-/blob/1.5.0/meson_options.txt?ref_type=tags
           meson setup build \
@@ -110,7 +103,6 @@ jobs:
             -Dlogging=false \
             -Denable_tests=false \
             -Denable_tools=false \
-            -Dc_args="$EXTRA_C_ARGS" \
             --werror
 
           ninja -C build
